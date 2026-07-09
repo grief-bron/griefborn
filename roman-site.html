@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prélude — un roman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0A0C10;
+    --panel:#12151C;
+    --panel-raised:#181C25;
+    --ember:#C1502E;
+    --ember-dim: rgba(193,80,46,0.35);
+    --ash:#7A8090;
+    --parchment:#EDE8DC;
+    --parchment-dim:#B8B4A8;
+    --cold:#3E6E82;
+    --hairline: rgba(237,232,220,0.09);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);
+    color:var(--parchment);
+    font-family:'Crimson Pro', serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--ember-dim); color:var(--parchment); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    padding-bottom:9vh;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 15%, rgba(193,80,46,0.10), transparent 60%),
+      linear-gradient(180deg, #0A0C10 0%, #0D1016 55%, #0A0C10 100%);
+  }
+
+  .cover-slot{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  /* Replace this box with <img class="cover-img" src="votre-image.jpg"> to add your cover */
+  .cover-placeholder{
+    width:220px; height:320px;
+    border:1px dashed rgba(237,232,220,0.18);
+    border-radius:2px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(237,232,220,0.28);
+    font-family:'Crimson Pro', serif;
+    font-style:italic;
+    font-size:0.85rem;
+    letter-spacing:0.04em;
+    text-align:center;
+    padding:1.5rem;
+    opacity:0;
+    animation: fadeIn 1.6s ease 0.3s forwards;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
+  }
+  .cover-img{
+    width:100%; height:100%;
+    object-fit:cover;
+    position:absolute; inset:0;
+    opacity:0.5;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.55) 60%, transparent 100%);
+  }
+
+  .embers{ position:absolute; inset:0; pointer-events:none; }
+  .ember-particle{
+    position:absolute;
+    bottom:-10px;
+    width:3px; height:3px;
+    border-radius:50%;
+    background:var(--ember);
+    box-shadow:0 0 6px 1.5px var(--ember-dim);
+    opacity:0;
+    animation-name: rise;
+    animation-timing-function: ease-in;
+    animation-iteration-count: infinite;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) translateX(0); opacity:0; }
+    8%{ opacity:0.85; }
+    100%{ transform:translateY(-70vh) translateX(var(--drift, 20px)); opacity:0; }
+  }
+  @keyframes fadeIn{ to{ opacity:1; } }
+
+  .title-block{
+    position:relative;
+    z-index:2;
+    text-align:center;
+    padding:0 1.5rem;
+  }
+  .title-eyebrow{
+    font-family:'Cinzel', serif;
+    font-size:0.68rem;
+    letter-spacing:0.42em;
+    color:var(--ash);
+    text-transform:uppercase;
+    margin-bottom:1.1rem;
+    opacity:0;
+    animation: fadeIn 1.4s ease 0.15s forwards;
+  }
+  .title-main{
+    font-family:'Cinzel', serif;
+    font-weight:600;
+    font-size:clamp(2.4rem, 7vw, 5rem);
+    letter-spacing:0.06em;
+    color:var(--parchment);
+    text-shadow: 0 0 40px rgba(193,80,46,0.18);
+    opacity:0;
+    animation: fadeIn 1.8s ease 0.5s forwards;
+  }
+  .title-rule{
+    width:48px; height:1px;
+    background:linear-gradient(90deg, transparent, var(--ember), transparent);
+    margin:1.6rem auto 0;
+    opacity:0;
+    animation: fadeIn 1.8s ease 1s forwards;
+  }
+
+  .scroll-cue{
+    position:absolute;
+    bottom:2.4rem; left:50%;
+    transform:translateX(-50%);
+    width:1px; height:36px;
+    background:linear-gradient(180deg, transparent, var(--ash) 60%, transparent);
+    opacity:0;
+    animation: fadeIn 1.5s ease 1.6s forwards, pulse 2.4s ease 2.4s infinite;
+  }
+  @keyframes pulse{ 0%,100%{ opacity:0.25; } 50%{ opacity:0.7; } }
+
+  /* ---------- VOLUMES ---------- */
+  .volumes{
+    max-width:640px;
+    margin:0 auto;
+    padding:8vh 1.5rem 16vh;
+  }
+
+  .volume{
+    border:1px solid var(--hairline);
+    border-radius:3px;
+    background:var(--panel);
+    overflow:hidden;
+  }
+
+  .volume-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:1rem;
+    padding:1.6rem 1.8rem;
+    cursor:pointer;
+    user-select:none;
+    background:var(--panel);
+    transition: background 0.3s ease;
+  }
+  .volume-header:hover{ background:var(--panel-raised); }
+  .volume-header:focus-visible{ outline:1.5px solid var(--ember); outline-offset:-2px; }
+
+  .volume-heading .volume-num{
+    font-family:'Cinzel', serif;
+    font-size:0.66rem;
+    letter-spacing:0.32em;
+    color:var(--ember);
+    text-transform:uppercase;
+    display:block;
+    margin-bottom:0.45rem;
+  }
+  .volume-heading .volume-title{
+    font-family:'Cinzel', serif;
+    font-weight:600;
+    font-size:1.5rem;
+    letter-spacing:0.08em;
+    color:var(--parchment);
+  }
+
+  .volume-toggle{
+    width:28px; height:28px;
+    flex-shrink:0;
+    position:relative;
+  }
+  .volume-toggle::before, .volume-toggle::after{
+    content:"";
+    position:absolute;
+    background:var(--ash);
+    transition: transform 0.45s cubic-bezier(0.65,0,0.35,1), background 0.3s ease;
+  }
+  .volume-toggle::before{ width:14px; height:1px; top:50%; left:50%; transform:translate(-50%,-50%); }
+  .volume-toggle::after{ width:1px; height:14px; top:50%; left:50%; transform:translate(-50%,-50%); }
+  .volume[data-open="true"] .volume-toggle::after{ transform:translate(-50%,-50%) rotate(90deg) scale(0); }
+  .volume[data-open="true"] .volume-toggle::before{ background:var(--ember); }
+
+  .volume-body{
+    max-height:0;
+    overflow:hidden;
+    transition: max-height 0.6s cubic-bezier(0.65,0,0.35,1);
+  }
+  .volume[data-open="true"] .volume-body{ max-height:600px; }
+
+  .chapter-list{ border-top:1px solid var(--hairline); }
+  .chapter-row{
+    display:flex;
+    align-items:baseline;
+    gap:1rem;
+    width:100%;
+    text-align:left;
+    background:none;
+    border:none;
+    border-bottom:1px solid var(--hairline);
+    color:var(--parchment);
+    font-family:'Crimson Pro', serif;
+    padding:1.15rem 1.8rem;
+    cursor:pointer;
+    transition: background 0.25s ease, padding-left 0.25s ease;
+  }
+  .chapter-row:last-child{ border-bottom:none; }
+  .chapter-row:hover{ background:rgba(193,80,46,0.06); padding-left:2.15rem; }
+  .chapter-row:focus-visible{ outline:1.5px solid var(--ember); outline-offset:-2px; }
+  .chapter-index{
+    font-family:'Cinzel', serif;
+    font-size:0.72rem;
+    color:var(--ember);
+    letter-spacing:0.08em;
+    flex-shrink:0;
+  }
+  .chapter-name{
+    font-size:1.05rem;
+    font-style:italic;
+    color:var(--parchment-dim);
+  }
+  .chapter-row:hover .chapter-name{ color:var(--parchment); }
+
+  /* ---------- READER OVERLAY ---------- */
+  .reader{
+    position:fixed; inset:0;
+    background:var(--void);
+    z-index:50;
+    opacity:0;
+    visibility:hidden;
+    transition: opacity 0.4s ease;
+    display:flex;
+    justify-content:center;
+    overflow-y:auto;
+  }
+  .reader[data-open="true"]{ opacity:1; visibility:visible; }
+
+  .reader-close{
+    position:fixed;
+    top:1.8rem; right:1.8rem;
+    width:40px; height:40px;
+    border:1px solid var(--hairline);
+    border-radius:50%;
+    background:var(--panel);
+    color:var(--ash);
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem;
+    z-index:51;
+    transition: color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+  }
+  .reader-close:hover{ color:var(--ember); border-color:var(--ember-dim); transform:rotate(90deg); }
+
+  .reader-inner{
+    max-width:640px;
+    width:100%;
+    padding:11vh 1.6rem 16vh;
+  }
+  .reader-eyebrow{
+    font-family:'Cinzel', serif;
+    font-size:0.68rem;
+    letter-spacing:0.35em;
+    color:var(--ember);
+    text-transform:uppercase;
+    text-align:center;
+    margin-bottom:1rem;
+  }
+  .reader-title{
+    font-family:'Cinzel', serif;
+    font-weight:600;
+    font-size:clamp(1.8rem, 5vw, 2.6rem);
+    letter-spacing:0.05em;
+    text-align:center;
+    margin-bottom:0.9rem;
+  }
+  .reader-rule{
+    width:40px; height:1px;
+    background:linear-gradient(90deg, transparent, var(--ember), transparent);
+    margin:0 auto 4.2rem;
+  }
+  .reader-text p{
+    font-size:1.14rem;
+    line-height:1.9;
+    color:var(--parchment-dim);
+    text-align:justify;
+    margin-bottom:1.5rem;
+  }
+  .reader-text em{ color:var(--parchment); font-style:italic; }
+  .scene-break{
+    text-align:center;
+    color:var(--ember);
+    font-size:0.85rem;
+    letter-spacing:0.5em;
+    margin:2.6rem 0;
+    opacity:0.7;
+  }
+
+  @media (max-width:560px){
+    .volume-header{ padding:1.3rem 1.3rem; }
+    .chapter-row{ padding:1rem 1.3rem; }
+    .chapter-row:hover{ padding-left:1.6rem; }
+    .reader-inner{ padding:9vh 1.2rem 12vh; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; }
+  }
+
+  /* ---------- ADMIN GUIDE (visible seulement avec ?admin=roman dans l'URL) ---------- */
+  .admin-fab{
+    position:fixed;
+    bottom:1.6rem; right:1.6rem;
+    z-index:60;
+    display:flex; align-items:center; gap:0.55rem;
+    padding:0.75rem 1.1rem;
+    background:var(--panel-raised);
+    border:1px solid var(--ember-dim);
+    border-radius:30px;
+    color:var(--parchment);
+    font-family:'Crimson Pro', serif;
+    font-size:0.92rem;
+    font-style:italic;
+    cursor:pointer;
+    box-shadow:0 6px 24px rgba(0,0,0,0.4);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  .admin-fab:hover{ transform:translateY(-2px); border-color:var(--ember); }
+  .admin-fab .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:var(--ember);
+    box-shadow:0 0 8px 2px var(--ember-dim);
+  }
+
+  .admin-panel{
+    position:fixed; inset:0;
+    background:var(--void);
+    z-index:70;
+    opacity:0; visibility:hidden;
+    transition: opacity 0.35s ease;
+    overflow-y:auto;
+    display:flex; justify-content:center;
+  }
+  .admin-panel[data-open="true"]{ opacity:1; visibility:visible; }
+  .admin-panel-inner{
+    max-width:680px; width:100%;
+    padding:8vh 1.6rem 14vh;
+  }
+  .admin-eyebrow{
+    font-family:'Cinzel', serif;
+    font-size:0.66rem;
+    letter-spacing:0.35em;
+    color:var(--ember);
+    text-transform:uppercase;
+    margin-bottom:0.8rem;
+  }
+  .admin-panel h2{
+    font-family:'Cinzel', serif;
+    font-weight:600;
+    font-size:clamp(1.6rem, 4.5vw, 2.2rem);
+    letter-spacing:0.04em;
+    margin-bottom:2.2rem;
+  }
+  .admin-section{
+    border-top:1px solid var(--hairline);
+    padding:2.2rem 0;
+  }
+  .admin-section:first-of-type{ border-top:none; }
+  .admin-section h3{
+    font-family:'Cinzel', serif;
+    font-size:1.05rem;
+    letter-spacing:0.03em;
+    color:var(--ember);
+    margin-bottom:1rem;
+  }
+  .admin-section p{
+    color:var(--parchment-dim);
+    line-height:1.75;
+    margin-bottom:0.9rem;
+    font-size:1.02rem;
+  }
+  .admin-section code{
+    background:var(--panel-raised);
+    border:1px solid var(--hairline);
+    border-radius:3px;
+    padding:0.1rem 0.4rem;
+    font-family:monospace;
+    font-size:0.88rem;
+    color:var(--parchment);
+  }
+  .admin-section pre{
+    background:var(--panel-raised);
+    border:1px solid var(--hairline);
+    border-radius:5px;
+    padding:1.1rem 1.2rem;
+    overflow-x:auto;
+    margin:0.9rem 0 1.2rem;
+  }
+  .admin-section pre code{
+    background:none; border:none; padding:0;
+    font-size:0.86rem;
+    line-height:1.6;
+    color:var(--parchment-dim);
+    white-space:pre;
+  }
+  .admin-step-num{
+    display:inline-flex;
+    width:22px; height:22px;
+    border-radius:50%;
+    border:1px solid var(--ember-dim);
+    color:var(--ember);
+    align-items:center; justify-content:center;
+    font-family:'Cinzel', serif;
+    font-size:0.72rem;
+    margin-right:0.6rem;
+    flex-shrink:0;
+  }
+  .admin-warn{
+    background:rgba(193,80,46,0.07);
+    border:1px solid var(--ember-dim);
+    border-radius:5px;
+    padding:1rem 1.2rem;
+    font-size:0.94rem;
+    color:var(--parchment-dim);
+    line-height:1.7;
+  }
+</style>
+</head>
+<body>
+
+  <section class="hero">
+    <div class="cover-slot">
+      <!-- Pour ajouter votre couverture : remplacez ce bloc par
+           <img class="cover-img" src="votre-image.jpg" alt=""> -->
+      <div class="cover-placeholder">Emplacement de la couverture</div>
+    </div>
+    <div class="embers" id="embers"></div>
+    <div class="title-block">
+      <div class="title-eyebrow">Un roman</div>
+      <h1 class="title-main">Titre du roman</h1>
+      <div class="title-rule"></div>
+    </div>
+    <div class="scroll-cue"></div>
+  </section>
+
+  <section class="volumes">
+    <div class="volume" data-open="false" id="volume-1">
+      <div class="volume-header" role="button" tabindex="0" aria-expanded="false" onclick="toggleVolume(this.parentElement)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleVolume(this.parentElement);}">
+        <div class="volume-heading">
+          <span class="volume-num">Volume I</span>
+          <span class="volume-title">Prélude</span>
+        </div>
+        <div class="volume-toggle"></div>
+      </div>
+      <div class="volume-body">
+        <div class="chapter-list" id="chapter-list-1"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="reader" id="reader" aria-hidden="true">
+    <button class="reader-close" onclick="closeReader()" aria-label="Fermer">&times;</button>
+    <div class="reader-inner">
+      <div class="reader-eyebrow" id="reader-eyebrow">Volume I — Prélude</div>
+      <h2 class="reader-title" id="reader-title"></h2>
+      <div class="reader-rule"></div>
+      <div class="reader-text" id="reader-text"></div>
+    </div>
+  </div>
+
+<script>
+  /* ============================================================
+     COMMENT AJOUTER UN NOUVEAU CHAPITRE
+     ------------------------------------------------------------
+     Ajoutez un nouvel objet à la fin du tableau CHAPTERS, juste
+     avant le crochet fermant "]". Respectez ce format :
+
+     {
+       title: "Prélude IV",
+       body: `Premier paragraphe du chapitre.
+
+Deuxième paragraphe, séparé du premier par une ligne vide.
+
+---
+
+Un paragraphe après une scène de coupure (les trois tirets créent
+un séparateur ◆ visuel entre deux scènes).
+
+« Un dialogue s'écrit avec des guillemets français comme ceci. »
+
+*Un mot ou une phrase entre astérisques s'affiche en italique.*`
+     },
+
+     Puis enregistrez le fichier et redéposez-le sur votre
+     hébergeur (voir les instructions de mise en ligne fournies
+     séparément). Le chapitre apparaîtra automatiquement dans la
+     liste, dans l'ordre où il a été ajouté au tableau.
+  ============================================================ */
+  const CHAPTERS = [
+  {
+    "title": "Prélude I",
+    "body": "Je ne me souviens pas de ma naissance. Personne ne s'en souvient, je crois. Mais ma mère me l'a racontée, plusieurs fois, comme on raconte une légende qu'on ne se lasse jamais de répéter : elle a pleuré de joie en me tenant contre elle, mon père a ri si fort que la sage-femme a dû lui demander de se calmer, il tremblait trop pour me porter les premières heures. Elle me l'a racontée tant de fois que ça a fini par ressembler à un souvenir, même si je sais que ça n'en est pas un. C'est peut-être ça, le tout début d'une vie : des histoires qu'on nous prête, avant qu'on soit capables d'en fabriquer nous-mêmes.\n\nDe mes huit premiers mois, il ne me reste presque rien de net. Seulement des impressions, comme des taches de couleur qui refusent de devenir des images. Une chaleur. Une odeur de bois brûlé. Une voix grave qui vibrait contre ma joue quand quelqu'un me portait tout contre sa poitrine.\n\nIl y a une scène, pourtant, que je crois deviner plus que je ne me la rappelle vraiment — un soir d'hiver, le genre de soir où le froid s'écrase contre les volets et où le feu dans la cheminée devient le centre du monde entier. Ma mère me tient contre elle et je tète, les yeux mi-clos, pendant que les flammes dessinent des ombres sur les murs de bois. Mon père est assis en face, une assiette sur les genoux, et il parle — je ne sais plus de quoi, peut-être de rien d'important, juste pour combler le silence, juste pour que la pièce ne soit pas trop calme. À un moment, il dit quelque chose qui fait rire ma mère, un vrai rire, un de ceux qui remontent depuis le ventre, et moi, sans comprendre un mot, sans même savoir ce qu'est un mot, je crois que j'ai ri aussi. Ou peut-être que j'ai simplement souri, et que dans mon souvenir flou, ça s'est transformé en rire au fil des années. Peu importe. Ce qui compte, c'est que dans cette pièce, ce soir-là, nous étions trois, et que c'était suffisant pour que le monde entier tienne dans quatre murs et un feu de cheminée.\n\n---\n\nMes souvenirs deviennent plus nets à mesure que je grandis, comme une image qu'on développe lentement dans l'eau.\n\nMa mère m'a raconté, bien plus tard, qu'à chaque marché, sans exception, je réclamais des pommes. Peu importait ce qu'elle avait prévu d'acheter ce jour-là — du pain, du fromage, des légumes pour la semaine — je finissais toujours par tendre les bras vers l'étal du fruitier, et elle finissait toujours par céder. « Tu n'as jamais rien voulu d'autre, disait-elle en riant. Rien que des pommes. On aurait dit que tu croyais que le monde entier tenait dans un sachet de fruits rouges. » Elle achetait systématiquement un plein sachet, même quand elle savait que je n'en mangerais qu'une ou deux avant de m'en désintéresser, simplement parce que voir mon visage s'illuminer valait bien quelques pommes gâchées.\n\nIl y a un de ces jours de marché dont je garde, moi, un vrai souvenir — flou sur les bords, mais réel. Ma mère m'avait habillé trop chaudement, comme toujours — un bonnet de laine qui me grattait les joues, une veste deux fois trop épaisse pour la saison — et elle me portait sur sa hanche en marchant entre les étals, s'arrêtant ici pour tâter un pain, là pour humer un fromage. Je ne comprenais pas grand-chose à ce qui m'entourait, seulement des couleurs, des voix, des odeurs qui se mélangeaient en un joyeux désordre. Puis j'ai vu les pommes.\n\nElles étaient rouges, presque trop rouges pour être vraies, empilées en pyramide sur un étal de bois, et j'ai tendu les bras vers elles avec toute la force dont un enfant de mon âge est capable — c'est-à-dire pas grand-chose, mais assez pour que ma mère s'arrête net et éclate de rire, comme si elle avait su, avant même que je ne bouge, que ça allait arriver.\n\n« Encore des pommes, mon cœur ? »\n\nJe ne pouvais évidemment pas répondre. J'ai dû gigoter, ou pousser un son, quelque chose qui ressemblait suffisamment à un \"oui\" pour qu'elle se penche vers le marchand et achète, comme toujours, un sachet entier. Elle me l'a montré comme un trésor en rentrant à la maison, et je me souviens d'avoir serré une pomme entre mes deux mains sans même essayer d'y mordre, juste pour la sentir, ronde et froide et à moi.\n\nÀ la maison, mon père nous attendait dans le jardin, en train de réparer la planche de la balançoire qu'il avait construite lui-même l'été précédent — un bout de bois usé, deux cordes, rien de très solide, mais à mes yeux, à l'époque, c'était la chose la plus merveilleuse du monde. Ma mère a posé les courses sur la table de la cuisine et il m'a soulevé sous les bras en riant, m'a installé sur la planche de bois, et m'a poussé doucement, encore et encore, jusqu'à ce que je crie de plaisir à chaque envolée. Le soleil commençait à descendre derrière les arbres du fond du jardin, et je me souviens d'avoir eu, à ce moment précis, l'impression que rien de mal ne pourrait jamais m'arriver tant que ces deux mains-là étaient assez fortes pour me pousser vers le ciel.\n\nLe soir venu, fatigué d'avoir trop ri, trop bougé, trop existé pour une seule journée, je me suis endormi presque avant que ma mère ait fini de me changer pour la nuit. Je me souviens vaguement d'avoir été porté jusqu'à mon lit, d'avoir senti deux bouches déposer chacune un baiser sur mon front — d'abord celle de ma mère, puis celle de mon père, qui sentait le bois et le savon — et d'une voix qui chuchotait, si doucement que je ne suis même plus sûr de l'avoir vraiment entendue, ou si je l'ai simplement rêvée depuis :\n\n« Bonne nuit, mon ange. »\n\n---\n\nCe soir-là, une fois certains que je dormais, mes parents sont restés un moment dans l'entrebâillement de la porte de ma chambre. Je ne l'ai jamais su sur le coup, bien sûr. C'est ma mère qui me l'a raconté, un jour, bien plus tard, avec ce sourire un peu triste qu'elle avait parfois quand elle repensait à des choses qu'elle jugeait trop belles pour durer. Elle m'en a parlé assez souvent, et avec assez de détails, pour que je puisse aujourd'hui l'imaginer presque comme un souvenir à moi — alors même que je n'étais, ce soir-là, qu'un enfant endormi de l'autre côté d'une porte.\n\nMa mère aurait posé sa tête contre l'épaule de mon père, les yeux encore tournés vers mon petit lit.\n\n« Tu crois qu'on mérite tout ça ? » aurait-elle demandé, dans un souffle.\n\nMon père aurait mis du temps à répondre. Puis :\n\n« Je crois que c'est la meilleure chose qui nous soit arrivée. À tous les deux. »\n\n« J'ai peur, parfois. » Sa voix aurait tremblé un peu. « Le monde est... »\n\n« Je sais. » Il l'aurait coupée, doucement, pas par impatience, mais parce qu'il n'aurait pas eu besoin qu'elle termine sa phrase pour comprendre. « Mais tant qu'on est là, il ne lui arrivera rien. On va lui donner une vie tranquille. Loin de tout ça. »\n\nIls seraient restés un moment encore dans le silence du couloir, à écouter ma respiration régulière derrière la porte entrouverte, avant de refermer doucement et de redescendre.\n\nJe ne peux pas jurer que cette conversation s'est déroulée mot pour mot ainsi. Mais je sais qu'elle a eu lieu, sous une forme ou une autre, un soir semblable à tant d'autres — parce que c'est le genre de phrase qu'on se répète, dans une famille, sans même s'en rendre compte. *Tant qu'on est là, il ne t'arrivera rien.*\n\n---\n\nLe jardin de la voisine sentait toujours le thé et les gâteaux au miel.\n\nNous avions grandi, depuis. J'avais deux ans, peut-être un peu plus, et je courais désormais partout dans la maison sans que ma mère ait besoin de me rattraper à chaque pas. La voisine, Olivia, avait une fille de mon âge, Elya, et nos deux mères s'étaient trouvé une habitude tranquille : l'après-midi, quand le temps le permettait, elles s'installaient sur la terrasse avec une théière et une assiette de gâteaux, pendant que nous jouions dans l'herbe à quelques mètres d'elles.\n\nJe me souviens du rire des deux mères qui montait de temps en temps par-dessus nos jeux, du bruit des tasses reposées sur leurs soucoupes, de l'odeur du miel qui flottait dans l'air tiède. Et je me souviens d'Elya elle-même — de son rire un peu trop fort pour son corps menu, de la façon dont elle inventait toujours des histoires à propos d'insectes qu'elle prétendait pouvoir comprendre, de sa manie de tirer sur ma manche quand elle voulait me montrer quelque chose.\n\nNous avons continué ainsi pendant des mois. Puis vint le jour de la maternelle.\n\nJe me souviens avoir eu peur, ce premier matin — la salle trop grande, trop de voix inconnues, trop d'enfants dont je ne savais rien. Mais elle était là, elle aussi, Elya, assise sur le petit banc près de la fenêtre, et je me suis précipité vers elle comme si elle était la seule chose familière dans cette pièce entière. Nous ne jouions qu'ensemble, les premiers temps — les autres enfants restaient une masse floue et bruyante autour de nous, pendant que nous construisions des tours avec des cubes de bois ou que nous nous racontions des histoires que ni l'un ni l'autre ne comprenait vraiment.\n\nLes mois ont passé comme ça, tranquillement, sans que rien ne vienne troubler cette routine. J'avais trois ans et demi. Le monde, pour moi, se limitait à une maison chaude, un jardin avec une balançoire, une salle de classe avec Elya à mes côtés, et deux mains — celles de mon père, celles de ma mère — toujours prêtes à me rattraper si je tombais.\n\nC'est à peu près à cette époque que ma mère a commencé à tousser.\n\nPersonne n'y a prêté attention, au début. Une toux, l'hiver, ce n'était rien d'inhabituel. Mais elle a continué, semaine après semaine, tenace, un peu plus profonde chaque fois — et un soir, en la regardant porter la main à sa poitrine entre deux quintes, j'ai vu, sur le visage de mon père qui l'observait depuis le pas de la cuisine, une expression que je n'avais encore jamais vue.\n\nDe l'inquiétude.\n\nJe ne savais pas encore ce que ce mot voulait dire. J'allais l'apprendre."
+  },
+  {
+    "title": "Prélude II",
+    "body": "Ma mère s'est effondrée un mardi.\n\nJe m'en souviens parce que c'était le jour où on mangeait toujours de la soupe aux poireaux, et que ce jour-là, elle n'a jamais été servie. Je l'ai vue porter la main à sa poitrine, comme elle le faisait depuis des semaines à chaque quinte de toux, sauf que cette fois ses jambes ont plié sous elle et qu'elle s'est écroulée contre la table de la cuisine. Mon père a crié son nom d'une façon que je ne lui avais jamais entendue, une voix qui ne ressemblait plus à sa voix.\n\nJe ne comprenais pas ce qui se passait. J'avais quatre ans, et à quatre ans, on ne sait pas encore que le corps peut se briser sans prévenir.\n\nPlus tard, quelqu'un — je crois que c'était le médecin, un homme avec une petite valise en cuir qui sentait le vinaigre — a expliqué à mon père que les poumons de ma mère étaient malades, qu'un mal s'était installé dedans et qu'il l'empêchait de respirer correctement, un peu comme si on lui écrasait doucement la poitrine jour après jour sans jamais s'arrêter. Moi, je me suis fait ma propre explication, plus simple, celle qu'un enfant se fabrique quand les adultes parlent trop vite et avec des mots trop grands : ma mère avait quelque chose de méchant à l'intérieur d'elle qui lui volait son souffle petit à petit, comme un voleur qui rentre la nuit et qui repart avant qu'on ne le voie.\n\nOn l'a installée dans son lit, et elle n'en est presque plus sortie pendant longtemps.\n\n---\n\nLes nuits, après ça, je n'arrivais plus vraiment à dormir. Ma chambre était juste à côté de la leur. Certaines nuits, je me relevais sans bruit et j'allais coller mon œil contre l'entrebâillement de la porte, qu'il ne refermait jamais tout à fait. Je voyais mon père assis sur une chaise, près du lit, tenant la main de ma mère entre les siennes comme si elle allait s'envoler s'il la lâchait — et je l'entendais parler tout bas, parfois pleurer, un genre de pleurs qu'il essayait d'étouffer contre son bras ou contre l'oreiller, comme s'il avait honte que je puisse l'entendre.\n\nJe ne disais jamais rien. Je retournais me coucher, et j'essayais de ne pas trop penser à ce que je venais de voir.\n\nMais le matin, il redevenait mon père. C'est ça qui m'a le plus marqué, avec le recul : la façon dont il rangeait sa tristesse quelque part, la nuit, pour ne pas que je la voie trop en plein jour. Il me réveillait, m'habillait quand j'étais trop lent, m'emmenait à l'école en me tenant la main tout le long du chemin. Puis il partait travailler. Puis il revenait me chercher. Puis il faisait le ménage, préparait à manger, montait un plateau à ma mère et s'asseyait au bord du lit pour la nourrir à la cuillère quand elle n'avait plus la force de porter elle-même la nourriture à sa bouche.\n\nJe ne sais pas quand il dormait, dans tout ça. Je ne crois pas qu'il dormait beaucoup.\n\n---\n\nOlivia venait presque tous les jours.\n\nElle arrivait toujours avec quelque chose dans les mains — un plat encore chaud enveloppé dans un torchon, du pain, une fois un bouquet de fleurs des champs qu'elle avait cueillies elle-même sur le chemin. Elle s'asseyait un moment au bord du lit de ma mère, lui prenait la main, lui parlait de choses sans importance — le temps qu'il faisait, une broderie qu'elle n'arrivait pas à terminer, une bêtise d'Elya — juste pour que ma mère ait, l'espace d'un instant, autre chose à penser que sa propre poitrine qui la brûlait. Parfois, elle repartait avec moi et Elya sous le bras, pour nous emmener jouer chez elle une heure ou deux, histoire que mon père puisse souffler un peu, seul avec sa femme, sans un enfant à surveiller en plus du reste.\n\nJe crois que sans elle, cette période aurait été bien pire. Il y a des gens, comme ça, qui ne font pas de grandes choses, juste des petites, mais qui les font tous les jours, sans jamais qu'on ait besoin de le leur demander.\n\n---\n\nLes mois ont passé ainsi. Deux, peut-être trois — pour un enfant de quatre ans, le temps n'a pas vraiment de mesure, juste des sensations qui durent plus ou moins longtemps. Ce que je sais, c'est qu'un jour, le médecin est reparti avec un visage différent de d'habitude. Pas tout à fait un sourire, mais quelque chose qui s'en approchait.\n\n« Elle va s'en sortir, » a-t-il dit à mon père, dans l'entrée. « Il faudra du temps, elle restera fragile un moment. Mais elle va s'en sortir. »\n\nJe n'ai jamais vu mon père pleurer aussi fort que ce soir-là. Sauf que cette fois, c'était un pleur différent de tous les autres — un pleur qui ressemblait presque à un rire, comme si la même eau pouvait sortir de deux endroits différents selon ce qu'on ressentait vraiment.\n\nOlivia est venue le lendemain avec un gâteau entier, pas juste un plat pour tenir compagnie. Elle a serré ma mère très fort dans ses bras, si fort que ma mère a ri en disant qu'elle allait finir par lui casser les côtes, et pendant un instant, la maison a eu l'air d'une maison heureuse à nouveau.\n\n---\n\nMa mère restait fatiguée. Elle marchait plus lentement qu'avant, s'essoufflait vite, devait s'asseoir souvent pour reprendre son souffle même après de petits efforts. Mais elle était debout. Elle était là. Et surtout, mon père redevenait, petit à petit, l'homme qu'il était avant — celui qui riait fort, qui inventait des histoires idiotes pour me faire manger mes légumes, qui me courait après dans le jardin en faisant semblant d'être un monstre jusqu'à ce que je m'écroule de rire dans l'herbe.\n\nIl se rattrapait, je crois. Tout ce temps où il avait dû être seulement fort, seulement sérieux, seulement inquiet, il voulait maintenant le remplir de tout ce qu'il n'avait pas pu me donner pendant que ma mère était malade. Il m'emmenait à la pêche, même si on ne ramenait jamais rien. Il me montrait comment reconnaître les arbres à leurs feuilles, comment siffler avec deux doigts dans la bouche — je n'y suis jamais arrivé, mais on a essayé pendant des heures, assis sur les marches devant la maison, jusqu'à ce que le soleil se couche.\n\nNotre relation, à cette époque, est devenue quelque chose que je n'aurais pas su nommer alors, mais que je reconnais maintenant : une vraie complicité, celle qui se construit non pas dans les grands moments, mais dans l'accumulation des petits.\n\n---\n\nEt puis, un dimanche de fin d'été, alors que ma mère pouvait enfin marcher sans s'essouffler à chaque pas, mes parents ont décidé qu'on irait tous les trois au bord de la rivière.\n\nMon père a préparé un panier avec du pain, du fromage, les dernières pommes de la saison — bien sûr — et nous avons marché jusqu'à la berge, ma mère s'appuyant parfois sur son bras, mais souriant tout du long. On a étalé une couverture dans l'herbe. Mon père m'a appris à faire des ricochets, et même si les miens coulaient presque tous immédiatement, il applaudissait à chaque fois comme si j'avais fait un exploit. Ma mère riait, allongée dans l'herbe, le visage tourné vers le soleil, plus légère que je ne l'avais vue depuis des mois.\n\nPlus tard, on s'est baignés tous les trois dans l'eau fraîche de la rivière — enfin, mon père et moi, parce que ma mère préférait tremper ses pieds depuis la berge en nous regardant, en riant à chaque fois que je poussais un cri à cause du froid. À un moment, mon père m'a hissé sur ses épaules et m'a fait sauter dans l'eau, encore et encore, jusqu'à ce que je n'aie plus assez de souffle pour rire.\n\nLe soir tombait doucement quand on a replié la couverture. J'étais épuisé, les cheveux encore mouillés, une pomme entamée dans la main. Ma mère a pris mon père par la taille, et lui a posé un baiser sur la tempe, et j'ai entendu, sans vraiment comprendre pourquoi elle disait ça à ce moment précis, ma mère murmurer :\n\n« Si seulement ça pouvait durer toujours. »\n\nMon père a ri doucement et a répondu que ça durerait, qu'il y veillerait personnellement, comme si c'était une promesse qu'il pouvait vraiment tenir.\n\nJe n'avais aucune raison de ne pas le croire."
+  },
+  {
+    "title": "Prélude III",
+    "body": "Il ne me restait que quelques jours avant mon anniversaire, et ce jour-là, tout allait bien. C'est ce qui rend ce souvenir-là si difficile à raconter : il n'y avait aucun signe, aucune fissure annonciatrice, rien qui aurait dû m'apprendre à me méfier de l'après-midi qui commençait.\n\nMon père jouait avec moi dans le jardin — je ne sais plus à quoi, une bataille imaginaire contre des ennemis invisibles, sûrement, c'était toujours nos jeux préférés — pendant que ma mère s'affairait dans la cuisine, juste derrière la grande fenêtre ouverte qui donnait sur le jardin. On pouvait se voir, se parler d'une pièce à l'autre sans même élever la voix. Je me souviens qu'elle riait à quelque chose que mon père venait de dire, et que lui riait de la voir rire, et que moi je riais parce que tout le monde riait, sans même savoir pourquoi.\n\nEt puis il y a eu les cris.\n\nIls venaient de loin, d'abord, de l'autre bout de la rue peut-être, ou même plus loin encore — assez loin pour que je ne comprenne pas tout de suite qu'il fallait avoir peur. Puis une femme est passée devant chez nous en courant, échevelée, hurlant à qui voulait l'entendre que les Faucheurs arrivaient, que les Faucheurs étaient déjà dans la rue voisine. Je ne savais pas ce que ce mot voulait dire. Mon père, lui, a compris avant moi. Je l'ai vu se figer, tourner la tête vers la fenêtre de la cuisine, et voir sur le visage de ma mère la même inquiétude qui venait de traverser le sien.\n\n« Va cueillir des baies, » m'a-t-il dit, avec une voix qu'il essayait de garder légère, presque joueuse, comme si c'était un jeu de plus. « Dans la forêt, juste là. Prends ton panier. Vas-y maintenant, d'accord ? »\n\nJe n'ai pas discuté. On ne discute jamais un ordre donné avec ce genre de sourire forcé, même à cinq ans, même sans comprendre pourquoi. J'ai attrapé mon petit panier en osier, j'ai mis mon chapeau de paille, et je suis parti vers les arbres en courant, tout excité à l'idée de ramener des baies pour le goûter du soir.\n\n---\n\nJe n'ai jamais été doué pour trouver les bons buissons. Ce jour-là encore moins que d'habitude — je m'éloignais, je revenais, je changeais de sentier, persuadé que les meilleures baies se trouvaient toujours un peu plus loin que là où j'étais. Le temps a filé sans que je m'en rende compte, comme il file toujours pour un enfant absorbé par quelque chose. Quand j'ai enfin rempli mon panier, le soleil avait basculé loin derrière les arbres, et le ciel commençait à prendre cette couleur orange sombre qui annonce le soir.\n\nJ'ai couru pour rentrer, fier de moi, pressé de montrer ma récolte.\n\nCe que j'ai vu en sortant du couvert des arbres ne ressemblait à rien que j'avais déjà vu. Rien qui aurait dû exister dans le monde que je connaissais.\n\nIl y avait du sang. Partout. Sur le sol de la rue, sur les murs des maisons, comme si quelqu'un l'avait jeté à pleines mains contre la pierre. Je me souviens avoir lâché mon panier sans même y penser, avoir couru en écrasant sous mes pieds toutes les baies que j'avais mis des heures à cueillir, sans que ça ait la moindre importance.\n\nÀ l'intérieur de la maison, mon père était empalé contre le mur, une arme le clouant à la pierre, sa tête retombée sur sa poitrine. Ma mère était allongée non loin, dans une mare de sang qui s'étalait tout autour d'elle sur le sol de la cuisine.\n\nJ'ai crié. Je ne me souviens pas du son exact que j'ai fait, seulement de la sensation que ce cri montait de bien plus profond que ma gorge, qu'il sortait de moi tout entier, comme si la terre elle-même avait crié à travers moi.\n\n---\n\nIl fallait de l'aide. C'est la seule pensée cohérente qui a réussi à traverser le chaos dans ma tête : Olivia. Olivia saurait quoi faire. Olivia arrangeait toujours tout.\n\nJ'ai couru jusqu'à sa porte, encore en larmes, et je l'ai ouverte sans frapper.\n\nJe n'aurais pas dû.\n\nCe que j'ai vu là-bas était pire encore que ce que je venais de laisser derrière moi. Olivia était étendue près de la porte, les bras et les jambes tranchés, baignant dans une mare de sang si large qu'elle recouvrait presque toute l'entrée. Un peu plus loin, Elya était allongée sur le sol, la tête tournée à l'envers, une jambe et un bras brisés, tout son petit corps retourné dans des positions qu'un corps ne devrait jamais pouvoir prendre.\n\nJe suis ressorti en courant, les larmes si épaisses dans mes yeux que le monde entier s'est dissous en taches de couleur, comme si j'avais cinq ans à l'envers, comme si j'étais redevenu ce bébé de huit mois qui ne savait encore rien distinguer. J'ai trébuché plusieurs fois, je me suis relevé sans même sentir la douleur, et j'ai couru droit devant moi, vers la forêt, loin de la rue, loin des maisons, loin de tout ce que je venais de voir.\n\n---\n\nLe soleil brillait encore, ce jour-là. Je m'en souviens précisément, parce que ça n'avait aucun sens : comment le ciel pouvait-il rester aussi bleu, aussi doux, alors que je venais de perdre tout ce que j'avais ? Je n'avais jamais connu de journée aussi sombre que celle-là, et pourtant il n'y avait pas un seul nuage.\n\nJ'ai couru pendant plus d'une heure, je crois, sans vraiment savoir où j'allais, en pleurant si fort que je manquais parfois d'air. La forêt s'est refermée autour de moi, plus dense, plus sombre à mesure que je m'enfonçais, jusqu'à ce que je ne reconnaisse plus rien de ce qui m'entourait. J'étais perdu. Complètement, définitivement perdu — dans une forêt aussi vaste que plusieurs villes réunies, sans personne pour me guider, sans personne, tout simplement.\n\nLa nuit est tombée avant que je ne m'en rende compte, et avec elle est arrivé le froid. J'ai fini par trouver une petite grotte, à peine plus qu'un renfoncement de roche, et je m'y suis glissé pour échapper au vent. J'étais si épuisé d'avoir pleuré, d'avoir couru, d'avoir simplement existé pendant ces quelques heures qui avaient déjà duré une vie entière, que je me suis endormi presque instantanément en m'allongeant sur la pierre froide.\n\nJe me suis réveillé le lendemain, en fin de matinée, le corps couvert d'égratignures et d'ecchymoses — j'étais tombé un nombre incalculable de fois en courant la veille, les larmes brouillant tout ce que je voyais, et je n'avais rien senti sur le moment. Ce n'est qu'en essayant de me relever que la douleur m'a rattrapé d'un coup, dans chaque genou, chaque coude, chaque paume. J'ai recommencé à pleurer, pendant des heures encore, jusqu'à ce que la faim finisse, malgré tout, par se rappeler à moi.\n\nMon anniversaire est arrivé quelques jours à peine après cette nuit-là. Je l'ai fêté seul, en pleurant, recroquevillé au fond de ma grotte, sans même songer à en sortir. J'avais cinq ans, désormais, et personne pour le savoir.\n\n---\n\nLes jours suivants se sont enchaînés d'une façon que je ne saurais pas vraiment découper en souvenirs distincts. Ils se ressemblaient tous, ou presque : je pleurais, beaucoup, la majeure partie de chaque journée. Puis je cherchais des baies, parce que c'était la seule chose que je savais trouver sans aide — les premiers jours, chaque pas était un calvaire, mes jambes couvertes de bleus protestant à chaque mouvement, mais je n'avais pas le choix. J'ai essayé, quelques fois, d'attraper des lapins ou des poissons dans le petit ruisseau qui traversait la forêt — je n'y suis parvenu que deux ou trois fois en tout, et je ne savais pas faire de feu. Je les ai mangés crus. Ça me donnait envie de vomir à chaque fois, mais je me retenais, parce que c'étaient les seules fois où mon corps recevait quelque chose qui ressemblait à un vrai repas.\n\nEn explorant les environs, j'ai fini par trouver quelques vieux journaux abandonnés et deux ou trois cartons détrempés, avec lesquels je me suis fabriqué une sorte de lit au fond de ma grotte, et une couverture de fortune pour les nuits les plus froides.\n\nCe quotidien a duré des mois.\n\nAprès trois ou quatre mois à pleurer ainsi, jour après jour, sans que rien ne semble jamais vouloir changer, je ne m'attendais pas à ce que mon quotidien bascule à nouveau.\n\nMais je ne savais pas encore si ce basculement allait être, cette fois, pour le meilleur."
+  }
+];
+
+  // Convertit le texte brut d'un chapitre (paragraphes séparés par
+  // une ligne vide, --- pour une coupure de scène, *mot* pour l'italique)
+  // en HTML affichable.
+  function mdToHtml(body){
+    const blocks = body.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+    return blocks.map(b => {
+      if(b === '---') return '<div class="scene-break">◆</div>';
+      let t = b.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      t = t.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      t = t.replace(/\n/g, ' ');
+      return `<p>${t}</p>`;
+    }).join('\n');
+  }
+
+
+  // Populate chapter list
+  const list = document.getElementById('chapter-list-1');
+  CHAPTERS.forEach((ch, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'chapter-row';
+    btn.innerHTML = `<span class="chapter-index">${String(i+1).padStart(2,'0')}</span><span class="chapter-name">${ch.title}</span>`;
+    btn.onclick = () => openReader(ch);
+    list.appendChild(btn);
+  });
+
+  function toggleVolume(vol){
+    const isOpen = vol.getAttribute('data-open') === 'true';
+    vol.setAttribute('data-open', String(!isOpen));
+    vol.querySelector('.volume-header').setAttribute('aria-expanded', String(!isOpen));
+  }
+
+  function openReader(ch){
+    document.getElementById('reader-title').textContent = ch.title;
+    document.getElementById('reader-text').innerHTML = mdToHtml(ch.body);
+    const reader = document.getElementById('reader');
+    reader.setAttribute('data-open', 'true');
+    reader.setAttribute('aria-hidden', 'false');
+    reader.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeReader(){
+    const reader = document.getElementById('reader');
+    reader.setAttribute('data-open', 'false');
+    reader.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape'){ closeReader(); closeAdmin(); }
+  });
+
+  // Le panneau d'administration n'apparaît que si l'URL contient ?admin=roman
+  // Vous pouvez changer "roman" par n'importe quel autre mot dans les deux lignes
+  // ci-dessous pour rendre votre URL secrète encore moins devinable.
+  const ADMIN_KEY = 'roman';
+  if(new URLSearchParams(window.location.search).get('admin') === ADMIN_KEY){
+    document.getElementById('admin-fab').style.display = 'flex';
+  }
+  function openAdmin(){
+    const panel = document.getElementById('admin-panel');
+    panel.setAttribute('data-open', 'true');
+    panel.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeAdmin(){
+    const panel = document.getElementById('admin-panel');
+    panel.setAttribute('data-open', 'false');
+    panel.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Ambient embers
+  const emberContainer = document.getElementById('embers');
+  const N = 14;
+  for(let i=0;i<N;i++){
+    const p = document.createElement('div');
+    p.className = 'ember-particle';
+    const left = Math.random()*100;
+    const delay = Math.random()*10;
+    const dur = 6 + Math.random()*6;
+    const drift = (Math.random()*40 - 20) + 'px';
+    p.style.left = left + '%';
+    p.style.animationDelay = delay + 's';
+    p.style.animationDuration = dur + 's';
+    p.style.setProperty('--drift', drift);
+    emberContainer.appendChild(p);
+  }
+</script>  <!-- Panneau visible uniquement en ajoutant ?admin=roman à l'URL -->
+  <button class="admin-fab" id="admin-fab" style="display:none" onclick="openAdmin()">
+    <span class="dot"></span> Guide
+  </button>
+
+  <div class="admin-panel" id="admin-panel" aria-hidden="true">
+    <div class="admin-panel-inner">
+      <button class="reader-close" onclick="closeAdmin()" aria-label="Fermer le guide">&times;</button>
+      <div class="admin-eyebrow">Visible uniquement par vous</div>
+      <h2>Guide d'administration</h2>
+
+      <div class="admin-warn">
+        Ce guide n'apparaît que si vous ajoutez <code>?admin=roman</code> à la fin de l'adresse du site. Un visiteur normal ne verra jamais ce bouton ni ce panneau — il ne verra que la page d'accueil et les chapitres, en lecture seule.
+      </div>
+
+      <div class="admin-section">
+        <h3>Changer le titre du roman</h3>
+        <p><span class="admin-step-num">1</span>Ouvrez le fichier <code>.html</code> du site avec un éditeur de texte (Bloc-notes, TextEdit, Notepad++, ou VS Code).</p>
+        <p><span class="admin-step-num">2</span>Cherchez cette ligne (Ctrl+F / Cmd+F pour chercher <code>title-main</code>) :</p>
+        <pre><code>&lt;h1 class="title-main"&gt;Titre du roman&lt;/h1&gt;</code></pre>
+        <p><span class="admin-step-num">3</span>Remplacez <code>Titre du roman</code> par le titre que vous voulez. Enregistrez le fichier.</p>
+      </div>
+
+      <div class="admin-section">
+        <h3>Ajouter une image de couverture</h3>
+        <p><span class="admin-step-num">1</span>Cherchez ce bloc (Ctrl+F / Cmd+F pour chercher <code>cover-placeholder</code>) :</p>
+        <pre><code>&lt;div class="cover-placeholder"&gt;Emplacement de la couverture&lt;/div&gt;</code></pre>
+        <p><span class="admin-step-num">2</span>Remplacez-le entièrement par :</p>
+        <pre><code>&lt;img class="cover-img" src="NOM-DE-VOTRE-IMAGE.jpg" alt=""&gt;</code></pre>
+        <p><span class="admin-step-num">3</span>Placez votre fichier image (jpg ou png) dans le même dossier que le fichier <code>.html</code>, avec exactement le même nom que celui écrit dans <code>src="..."</code>. Si vous hébergez sur GitHub ou Netlify, uploadez l'image en même temps que le fichier HTML.</p>
+      </div>
+
+      <div class="admin-section">
+        <h3>Ajouter un nouveau chapitre</h3>
+        <p><span class="admin-step-num">1</span>Dans le fichier <code>.html</code>, cherchez <code>const CHAPTERS = [</code>.</p>
+        <p><span class="admin-step-num">2</span>Juste avant le crochet fermant <code>]</code> qui termine ce tableau, ajoutez une virgule après le dernier chapitre existant, puis collez un nouveau bloc dans ce format :</p>
+        <pre><code>{
+  title: "Prélude IV",
+  body: `Premier paragraphe du chapitre.
+
+Deuxième paragraphe, séparé du premier
+par une ligne vide.
+
+---
+
+Un paragraphe après une coupure de scène
+(les trois tirets créent un séparateur ◆).
+
+« Un dialogue avec des guillemets français. »
+
+*Un mot ou une phrase en italique.*`
+}</code></pre>
+        <p><span class="admin-step-num">3</span>Enregistrez le fichier. Le nouveau chapitre apparaîtra automatiquement dans la liste, dans l'ordre où vous l'avez ajouté — pas besoin de conversion, le site s'occupe de tout.</p>
+      </div>
+
+      <div class="admin-section">
+        <h3>Mettre les changements en ligne</h3>
+        <p>Après chaque modification du fichier, vous devez re-déposer la nouvelle version sur votre hébergeur pour que les visiteurs voient les changements :</p>
+        <p><span class="admin-step-num">•</span><strong>Netlify :</strong> retournez sur app.netlify.com, ouvrez votre site, et glissez-déposez le nouveau fichier pour remplacer l'ancien.</p>
+        <p><span class="admin-step-num">•</span><strong>GitHub Pages :</strong> uploadez le fichier modifié dans votre repository (il remplacera l'ancien), le site se met à jour automatiquement en quelques minutes.</p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
